@@ -27,3 +27,6 @@ Thumbs.db
 
 # dbt local user id
 .user.yml
+
+# Local tool config
+.claude/
