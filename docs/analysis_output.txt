@@ -1,0 +1,143 @@
+Delivered orders in analysis window: 96,203
+
+======================================================================
+Q1  Late delivery vs review score
+======================================================================
+                  orders  avg_score  bad_rate
+lateness_bucket                              
+0 on time          89182      4.291     0.092
+1 late 1-3 days     1851      3.291     0.321
+2 late 4-7 days     1748      2.105     0.676
+3 late 8-14 days    1446      1.671     0.802
+4 late 15+ days     1333      1.724     0.783
+
+  late share of orders:       6.7%
+  late share of 1-2 star:     32.5%
+  bad reviews caused by lateness (excess over on-time rate): 3,390 of 12,228 (27.7%)
+
+  top-15 categories: drop ranges 1.75 to 2.27 stars (15/15 drop by more than 1 star)
+  states with 50+ late orders (20): drop ranges 1.63 to 2.33 stars
+
+  avg score by delivery time, late vs on time:
+          mean         size      
+is_late  False True   False True 
+speed                            
+0-7 days  4.41  3.97  30442    74
+8-14      4.31  3.27  37361   334
+15-21     4.16  2.94  15414   581
+22-30     3.94  2.55   5171  2048
+30+       3.63  1.85    794  3341
+
+  OLS (controls: category, state, value, items, multi-seller, delivery days):
+    late       -1.52 stars  (95% CI -1.57 to -1.46)
+    +1 day     -0.023 stars
+    multi-seller order -1.15 stars
+  Logit: late orders have 8.0x the odds of a 1-2 star review (95% CI 7.4-8.7)
+  saved docs/images/01_lateness_vs_reviews.png
+
+======================================================================
+Q2  Seller or courier?
+======================================================================
+         orders  median_handling_days  median_carrier_days  median_promised_days  missed_ship_limit  median_distance_km  same_state
+is_late                                                                                                                            
+False     88327                  1.79                 6.96                  24.0               0.08              426.22        0.37
+True       6506                  3.07                26.20                  23.0               0.28              528.75        0.24
+
+  late orders where the seller shipped on time: 72.2%
+  late orders where the seller missed its ship-by date: 27.8%
+  late rate if seller ships on time: 5.4%; if seller misses ship-by date: 21.1%
+
+  monthly late rate:
+                orders  late_rate  promised  actual
+purchase_month                                     
+2017-01-01         750      0.029      39.0    11.0
+2017-02-01        1653      0.030      31.0    11.0
+2017-03-01        2546      0.046      23.0    10.0
+2017-04-01        2303      0.066      26.0    13.0
+2017-05-01        3545      0.030      24.0    10.0
+2017-06-01        3135      0.030      24.0    11.0
+2017-07-01        3872      0.028      24.0    10.0
+2017-08-01        4193      0.029      23.0    10.0
+2017-09-01        4150      0.044      23.0    10.0
+2017-10-01        4478      0.042      23.0    10.0
+2017-11-01        7288      0.124      23.0    13.0
+2017-12-01        5513      0.075      28.0    13.0
+2018-01-01        7069      0.057      26.0    12.0
+2018-02-01        6555      0.141      25.0    14.0
+2018-03-01        7003      0.190      22.0    13.0
+2018-04-01        6798      0.045      24.0     9.0
+2018-05-01        6749      0.066      22.0     9.0
+2018-06-01        6096      0.012      28.0     8.0
+2018-07-01        6156      0.034      20.0     7.0
+2018-08-01        6351      0.062      14.0     7.0
+  saved docs/images/02_where_the_time_goes.png
+  saved docs/images/03_monthly_late_rate.png
+
+======================================================================
+Q3  Which states and sellers?
+======================================================================
+                orders  late  late_rate  promised  actual        km  score  share_of_orders  share_of_late
+customer_state                                                                                            
+AL                 396    85      0.215      32.0    22.0  1914.325  3.847            0.004          0.013
+MA                 713   125      0.175      31.0    19.0  2196.445  3.829            0.007          0.019
+SE                 332    51      0.154      30.0    18.0  1721.123    3.9            0.003          0.008
+PI                 475    66      0.139      30.0    16.0  2056.147  3.994            0.005          0.010
+CE                1273   176      0.138      32.0    18.0  2292.336   3.94            0.013          0.027
+RR                  40     5      0.125      45.0    25.0  3302.478    3.9            0.000          0.001
+BA                3253   396      0.122      30.0    17.0  1422.779  3.929            0.034          0.061
+RJ               12310  1495      0.121      25.0    12.0   394.482  3.965            0.128          0.229
+PA                 942   106      0.113      37.0    21.0  2393.595  3.913            0.010          0.016
+ES                1992   214      0.107      26.0    14.0   761.483  4.079            0.021          0.033
+PB                 516    54      0.105      33.0    18.0  2161.677  4.074            0.005          0.008
+TO                 274    27      0.099      29.0    16.0  1481.007  4.154            0.003          0.004
+MS                 701    68      0.097      26.0    14.0   863.584  4.162            0.007          0.010
+PE                1587   153      0.096      32.0    16.0  2082.227  4.082            0.016          0.023
+RN                 470    44      0.094      32.0    16.0  2263.846  4.143            0.005          0.007
+SC                3537   291      0.082      26.0    13.0   527.966  4.134            0.037          0.045
+GO                1950   128      0.066      27.0    14.0   804.421  4.102            0.020          0.020
+RS                5327   325      0.061      29.0    13.0   855.417  4.185            0.055          0.050
+MT                 885    53      0.060      32.0    16.0  1332.868  4.145            0.009          0.008
+DF                2074   118      0.057      25.0    11.0   866.878  4.134            0.022          0.018
+MG               11319   519      0.046      24.0    10.0   490.329  4.194            0.118          0.079
+SP               40399  1817      0.045      19.0     7.0   163.237  4.247            0.420          0.278
+PR                4903   199      0.041      25.0    10.0   426.035  4.241            0.051          0.030
+AC                  80     3      0.038      41.0    18.0  2713.252  4.088            0.001          0.000
+AP                  67     2      0.030      48.0    25.0  2662.760  4.242            0.001          0.000
+RO                 243     7      0.029      38.0    18.0  2279.733  4.165            0.003          0.001
+AM                 145     4      0.028      46.0    26.0  2693.097  4.243            0.002          0.001
+
+  late rate same-state: 4.5%; cross-state: 8.1%
+             orders  late_rate  promised  actual
+distance_km                                     
+<100 km       17824      0.045      15.0     5.0
+100-500       36896      0.061      23.0     9.0
+500-1000      25680      0.071      26.0    12.0
+1000-2000      9709      0.095      30.0    15.0
+2000+          5593      0.121      34.0    18.0
+
+  2,933 sellers; 1,272 had at least one late order
+  top  10 sellers by late orders: 15.7% of late orders, 13.7% of orders
+  top  50 sellers by late orders: 38.1% of late orders, 31.8% of orders
+  top 100 sellers by late orders: 50.4% of late orders, 41.9% of orders
+  top 200 sellers by late orders: 65.3% of late orders, 55.3% of orders
+
+  sellers with 30+ delivered orders: 619
+  corr(late rate, bad-review rate) = 0.55
+        sellers  orders  avg_score  bad_rate  handling_days
+band                                                       
+0-3%        145   10951       4.32      0.09           2.12
+3-6%        189   28767       4.19      0.12           2.59
+6-10%       162   29286       4.13      0.14           2.86
+10-15%       85    9649       3.98      0.17           3.52
+15%+         38    2886       3.66      0.25           5.09
+  saved docs/images/04_late_rate_by_state.png
+
+======================================================================
+Q4  Late first order vs repeat purchase
+======================================================================
+  customers: 55,227; overall repeat rate 4.02%
+  first order on time: 4.09% came back (95% CI 3.92%-4.26%, n=51,560)
+  first order late   : 3.05% came back (95% CI 2.54%-3.66%, n=3,667)
+  two-proportion z-test: z=3.08, p=0.0021
+  logit with controls: odds ratio 0.82 (95% CI 0.67-0.99), p=0.043
+  saved docs/images/05_repeat_after_first_order.png
