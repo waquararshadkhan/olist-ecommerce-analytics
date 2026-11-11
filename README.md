@@ -2,6 +2,8 @@
 
 **6.7% of orders arrive late, but they produce 32.5% of all 1–2 star reviews.**
 
+**[▶ Live dashboard](https://olist-late-deliveries.streamlit.app/)** · [Full findings](docs/findings.md) · [Data-quality report](docs/data_quality.md)
+
 An end-to-end analytics project on 100K real orders from Olist, a Brazilian e-commerce
 marketplace: raw CSVs → tested dbt models in DuckDB → statistical analysis → interactive
 Streamlit dashboard.
@@ -28,8 +30,10 @@ Full write-up with every table and method: **[docs/findings.md](docs/findings.md
 
 ## Dashboard
 
+**Live: [olist-late-deliveries.streamlit.app](https://olist-late-deliveries.streamlit.app/)**
+
 A Streamlit app with filters for month, state and category, and tabs for reviews, trend,
-regions, seller vs courier, and a seller league table.
+regions, seller vs courier, and a seller league table. To run it locally:
 
 ```bash
 streamlit run app/streamlit_app.py
