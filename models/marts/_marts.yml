@@ -1,0 +1,66 @@
+version: 2
+
+models:
+  - name: fct_orders
+    description: >
+      One row per order with customer, primary seller, delivery outcome, value and
+      review. Delivery metrics are blank unless the order was delivered with a date.
+    columns:
+      - name: order_id
+        data_tests: [unique, not_null]
+      - name: customer_unique_id
+        description: The real customer. Use this, not customer_id, for repeat behaviour.
+        data_tests:
+          - not_null
+      - name: seller_id
+        description: Primary seller (highest item value in the order).
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_sellers')
+                field: seller_id
+      - name: order_value
+        description: Item price + freight. The revenue measure for this project.
+      - name: is_revenue_order
+        description: Not canceled or unavailable, and has items.
+      - name: is_late
+        description: Delivered after the estimated delivery date (date level).
+      - name: days_vs_estimate
+        description: Delivery date minus estimated date in days. Positive = late.
+      - name: lateness_bucket
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['0 on time', '1 late 1-3 days', '2 late 4-7 days', '3 late 8-14 days', '4 late 15+ days']
+      - name: review_score
+        description: Latest review score for the order (1-5).
+      - name: seller_handling_days
+        description: Approval to hand-over to the carrier. Blank for out-of-order timestamps.
+      - name: carrier_days
+        description: Hand-over to the carrier until delivery. Blank for out-of-order timestamps.
+      - name: distance_km
+        description: Straight-line distance between customer and seller zip-code centroids.
+
+  - name: dim_customers
+    description: One row per real customer who placed at least one revenue order.
+    columns:
+      - name: customer_unique_id
+        data_tests: [unique, not_null]
+      - name: order_count
+        data_tests: [not_null, positive_value]
+      - name: first_order_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('fct_orders')
+                field: order_id
+
+  - name: dim_sellers
+    description: One row per seller with volume, delivery and review performance.
+    columns:
+      - name: seller_id
+        data_tests: [unique, not_null]
+      - name: late_rate
+        description: Share of the seller's delivered orders that arrived late.
+      - name: has_enough_orders
+        description: At least 30 delivered orders; use to avoid noisy rates.

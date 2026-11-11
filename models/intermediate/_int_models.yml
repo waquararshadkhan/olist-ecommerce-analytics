@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: int_order_items_by_order
+    description: One row per order with items; totals plus primary seller and category.
+    columns:
+      - name: order_id
+        data_tests: [unique, not_null]
+      - name: primary_seller_id
+        data_tests: [not_null]
+
+  - name: int_order_payments_by_order
+    description: One row per order with payments.
+    columns:
+      - name: order_id
+        data_tests: [unique, not_null]
+
+  - name: int_order_reviews_latest
+    description: The latest review for each order.
+    columns:
+      - name: order_id
+        data_tests: [unique, not_null]
