@@ -1,0 +1,19 @@
+version: 2
+
+sources:
+  - name: olist
+    description: >
+      Raw Olist CSVs loaded as text by scripts/load_raw.py. Nothing is cleaned here;
+      see docs/data_quality.md for the issues found and models/staging for the fixes.
+    schema: raw
+    tables:
+      - name: orders
+      - name: customers
+        description: One row per customer *per order*. The real person is customer_unique_id.
+      - name: order_items
+      - name: order_payments
+      - name: order_reviews
+      - name: products
+      - name: sellers
+      - name: geolocation
+      - name: category_translation

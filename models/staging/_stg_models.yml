@@ -1,0 +1,134 @@
+version: 2
+
+models:
+  - name: stg_orders
+    description: One row per order, timestamps cast, with data-quality flags.
+    columns:
+      - name: order_id
+        data_tests: [unique, not_null]
+      - name: customer_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_id
+      - name: order_status
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [delivered, shipped, canceled, unavailable, invoiced, processing, created, approved]
+      - name: purchased_at
+        data_tests: [not_null]
+      - name: estimated_delivery_at
+        data_tests: [not_null]
+      - name: is_delivered_with_date
+        description: Delivered and has a delivery date. The base for every on-time metric.
+      - name: has_timestamp_anomaly
+        description: Courier or delivery timestamp is out of order. Exclude from stage timings.
+      - name: is_in_analysis_window
+        description: Purchased Jan 2017 - Aug 2018, the months with enough orders for trends.
+
+  - name: stg_customers
+    description: One row per customer_id. Use customer_unique_id for the real person.
+    columns:
+      - name: customer_id
+        data_tests: [unique, not_null]
+      - name: customer_unique_id
+        data_tests: [not_null]
+      - name: state
+        data_tests: [not_null]
+
+  - name: stg_order_items
+    description: One row per item line in an order.
+    columns:
+      - name: order_item_key
+        data_tests: [unique, not_null]
+      - name: order_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+      - name: product_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_products')
+                field: product_id
+      - name: seller_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_sellers')
+                field: seller_id
+      - name: price
+        data_tests:
+          - not_null
+          - positive_value
+
+  - name: stg_order_payments
+    description: One row per payment within an order.
+    columns:
+      - name: payment_key
+        data_tests: [unique, not_null]
+      - name: order_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+      - name: payment_type
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [credit_card, boleto, voucher, debit_card, not_defined]
+
+  - name: stg_order_reviews
+    description: One row per (review, order) pair.
+    columns:
+      - name: review_key
+        data_tests: [unique, not_null]
+      - name: order_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+          - unique:
+              config:
+                where: is_latest_for_order
+      - name: review_score
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5]
+                quote: false
+
+  - name: stg_products
+    description: One row per product with an English category name.
+    columns:
+      - name: product_id
+        data_tests: [unique, not_null]
+      - name: category
+        description: English category; 'unknown' when Olist has none.
+        data_tests: [not_null]
+
+  - name: stg_sellers
+    description: One row per seller.
+    columns:
+      - name: seller_id
+        data_tests: [unique, not_null]
+
+  - name: stg_geolocation
+    description: One average point per zip-code prefix, inside Brazil only.
+    columns:
+      - name: zip_code_prefix
+        data_tests: [unique, not_null]
+
+  - name: stg_category_translation
+    columns:
+      - name: product_category_name
+        data_tests: [unique, not_null]

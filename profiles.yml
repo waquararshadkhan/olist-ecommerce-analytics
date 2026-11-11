@@ -1,0 +1,9 @@
+# dbt looks for profiles.yml in the current folder first, so running dbt from the
+# project root needs no setup in ~/.dbt. The database is a local file, no credentials.
+olist_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: olist.duckdb
+      threads: 4
